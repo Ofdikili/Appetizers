@@ -9,60 +9,29 @@ import SwiftUI
 
 struct AppetizersListView: View {
     
-    @State var appetizerList : [Appetizer] = []
-    @State var selectedAppetizer : Appetizer? = nil
-    @State var isLoading : Bool = false
+    @StateObject private var appetizerVM = AppetizersViewModel()
     var body: some View {
-        NavigationView{
-            if isLoading{
-                ProgressView("Loading")
+        ZStack{
+            NavigationView{
+                List(appetizerVM.appetizers){
+                appetizer in
+                AppetizerListItem(appetizer: appetizer)
+                        
+            }.navigationTitle("🍟 Appetizers")
+                
+                }.onAppear{
+                    appetizerVM.loadAppetizers()
+                }
+            if(appetizerVM.isLoading){
+                ProgressView()
             }
-            
-                    else {
-               List(appetizerList){
-                    appetizer in
-                    AppetizerListItem(appetizer: appetizer)
-                }.navigationTitle("🍟 Appetizers")
-                           
-           }
-        }.onAppear{
-            loadAppetizers()
+        } .alert(item:$appetizerVM.alertItem){
+            alertItem in
+            Alert(
+                title: alertItem.title, message: alertItem.message, dismissButton: alertItem.dismissButton
+            )
         }
     }
-    
-    func loadAppetizers() {
-        isLoading = true
-        let networkManager: NetworkManager = NetworkManager.shared
-        networkManager.getAppetizers { (result) in
-            switch(result){
-            case .success(let appetizers):
-                self.appetizerList = appetizers
-                self.isLoading = false
-            case .failure(let error):
-                print("Error fetching appetizers: \(error.localizedDescription)")
-            }
-        }
-    }
-    
-//    func loadAppetizers() {
-//        isLoading = true
-//        let networkManager: NetworkManager = NetworkManager.shared
-//        networkManager.getAppetizers {(result) in
-//            DispatchQueue.main.async {
-//                switch result {
-//                case .success(let appetizers):
-//                    self.appetizerList = appetizers
-//                    self.isLoading = false  // Veri gelince loading kaldır
-//                    
-//                case .failure(let error):
-//                    self.isLoading = false  // Hata olsa da loading kapanmalı
-//                    print("Error fetching appetizers: \(error.localizedDescription)")
-//   
-//                }
-//            }
-//        }
-//    }
-
 }
 
 struct AppetizerListItem:View {
