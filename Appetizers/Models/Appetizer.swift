@@ -12,7 +12,7 @@ struct Appetizer: Decodable, Identifiable {
 }
 
 
-struct AppetizerResponse: Decodable {
+struct AppetizerRespose: Decodable {
     let request: [Appetizer]
 }
 

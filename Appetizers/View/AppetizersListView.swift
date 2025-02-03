@@ -8,14 +8,61 @@
 import SwiftUI
 
 struct AppetizersListView: View {
+    
+    @State var appetizerList : [Appetizer] = []
+    @State var selectedAppetizer : Appetizer? = nil
+    @State var isLoading : Bool = false
     var body: some View {
         NavigationView{
-            List(MockData.appetizers){
-                appetizer in
-                AppetizerListItem(appetizer: appetizer)
-            }.navigationTitle("🍟 Appetizers")
+            if isLoading{
+                ProgressView("Loading")
+            }
+            
+                    else {
+               List(appetizerList){
+                    appetizer in
+                    AppetizerListItem(appetizer: appetizer)
+                }.navigationTitle("🍟 Appetizers")
+                           
+           }
+        }.onAppear{
+            loadAppetizers()
         }
     }
+    
+    func loadAppetizers() {
+        isLoading = true
+        let networkManager: NetworkManager = NetworkManager.shared
+        networkManager.getAppetizers { (result) in
+            switch(result){
+            case .success(let appetizers):
+                self.appetizerList = appetizers
+                self.isLoading = false
+            case .failure(let error):
+                print("Error fetching appetizers: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+//    func loadAppetizers() {
+//        isLoading = true
+//        let networkManager: NetworkManager = NetworkManager.shared
+//        networkManager.getAppetizers {(result) in
+//            DispatchQueue.main.async {
+//                switch result {
+//                case .success(let appetizers):
+//                    self.appetizerList = appetizers
+//                    self.isLoading = false  // Veri gelince loading kaldır
+//                    
+//                case .failure(let error):
+//                    self.isLoading = false  // Hata olsa da loading kapanmalı
+//                    print("Error fetching appetizers: \(error.localizedDescription)")
+//   
+//                }
+//            }
+//        }
+//    }
+
 }
 
 struct AppetizerListItem:View {
