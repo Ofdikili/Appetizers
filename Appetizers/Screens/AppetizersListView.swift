@@ -15,13 +15,24 @@ struct AppetizersListView: View {
             NavigationView{
                 List(appetizerVM.appetizers){
                 appetizer in
-                AppetizerListItem(appetizer: appetizer)
+                    AppetizerListItem(appetizer: appetizer).onTapGesture {
+                        appetizerVM.selectedAppetizer = appetizer
+                    }
                         
             }.navigationTitle("🍟 Appetizers")
+                    .disabled(appetizerVM.showDetailView)
                 
                 }.onAppear{
                     appetizerVM.loadAppetizers()
                 }
+                .blur(radius:appetizerVM.showDetailView ? 20 : 0)
+            
+            if(appetizerVM.showDetailView){
+                AppetizerDetailView(appiter: appetizerVM.selectedAppetizer!,
+                                    isShowingDetail: $appetizerVM.showDetailView
+                )
+            }
+            
             if(appetizerVM.isLoading){
                 ProgressView()
             }
