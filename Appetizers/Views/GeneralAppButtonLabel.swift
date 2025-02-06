@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-struct AddOrderButton: View {
-    var price : Double = 0
+struct GeneralAppButtonLabel: View {
+    var title : String
     var body: some View {
-        Label("$ \(price,specifier: "%.2f") - Add to Order",systemImage: "")
+        Label(title,systemImage: "")
             .frame(width: 240, height: 36)
     }
 }
 
 #Preview {
-    AddOrderButton()
+    GeneralAppButtonLabel(title: "Click me")
 }
