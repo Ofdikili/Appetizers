@@ -13,25 +13,32 @@ struct AccountView: View {
         NavigationView{
             Form{
                 Section("Personal Information"){
-                    TextField("First Name", text: $accountVM.firstName)
-                    TextField("Last Name", text:$accountVM.lastName)
-                    TextField("Email", text:$accountVM.email)
+                    TextField("First Name", text: $accountVM.user.firstName)
+                    TextField("Last Name", text:$accountVM.user.lastName)
+                    TextField("Email", text:$accountVM.user.email)
                         .keyboardType(.emailAddress)
                     DatePicker(
-                        "BirthDay",selection: $accountVM.dateTime,displayedComponents: .date
+                        "BirthDay",selection: $accountVM.user.dateTime,displayedComponents: .date
                     )
                     Button{
-                        
+                        accountVM.saveChanged()
                     }label: {
                         Text("Save Changes")
                     }
                 }
                 Section("Requests"){
-                    Toggle("Extra Napkins",isOn: $accountVM.extraNapkins)
-                    Toggle("Frequent Refiils",isOn: $accountVM.frequentsRefills)
+                    Toggle("Extra Napkins",isOn: $accountVM.user.extraNapkins)
+                    Toggle("Frequent Refiils",isOn: $accountVM.user.frequentsRefills)
                 }
                 .toggleStyle(SwitchToggleStyle(tint: .brandPrimary))
             }.navigationTitle("Account")
+        }
+        .alert(item:$accountVM.alertItem){
+            alertItem in
+            Alert(title: alertItem.title, message: alertItem.message, dismissButton:alertItem.dismissButton)
+        }
+        .onAppear(){
+            accountVM.loadUser()
         }
             }
 }
