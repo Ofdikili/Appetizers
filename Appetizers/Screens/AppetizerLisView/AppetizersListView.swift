@@ -15,7 +15,9 @@ struct AppetizersListView: View {
             NavigationView{
                 List(appetizerVM.appetizers){
                 appetizer in
-                    AppetizerListItem(appetizer: appetizer).onTapGesture {
+                    AppetizerListItem(appetizer: appetizer)
+                        .listRowSeparator(.hidden)
+                        .onTapGesture {
                         appetizerVM.selectedAppetizer = appetizer
                     }
                         
@@ -25,6 +27,11 @@ struct AppetizersListView: View {
                 }.onAppear{
                     appetizerVM.loadAppetizers()
                 }
+                //.onAppear{
+                //                    appetizerVM.loadAppetizers()
+                //                }
+                .task {
+                    appetizerVM.loadAppetizers()}
                 .blur(radius:appetizerVM.showDetailView ? 20 : 0)
             
             if(appetizerVM.showDetailView){
@@ -48,21 +55,41 @@ struct AppetizersListView: View {
 struct AppetizerListItem:View {
     let appetizer:Appetizer
     var body: some View {
-            HStack{
-                AppetizerRemoteImage(urlString: appetizer.imageURL)
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 120, height: 80)
-                    .cornerRadius(8)
-                VStack(alignment:.leading,spacing: 5){
+            HStack {
+    //            AppetizerRemoteImage(urlString: appetizer.imageURL)
+    //                .aspectRatio(contentMode: .fit)
+    //                .frame(width: 120, height: 90)
+    //                .cornerRadius(8)
+                
+                AsyncImage(url: URL(string: appetizer.imageURL)) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 120, height: 90)
+                        .cornerRadius(8)
+                } placeholder: {
+                    Image("food-placeholder")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 120, height: 90)
+                        .cornerRadius(8)
+                }
+
+
+                
+                VStack(alignment: .leading, spacing: 5) {
                     Text(appetizer.name)
                         .font(.title2)
                         .fontWeight(.medium)
-                    Text("$\(appetizer.price,specifier: "%.2f")")
-                        .foregroundStyle(.secondary)
+                    
+                    Text("$\(appetizer.price, specifier: "%.2f")")
+                        .foregroundColor(.secondary)
                         .fontWeight(.semibold)
                 }
+                .padding(.leading)
+            }
         }
-    }
+
 }
 
 #Preview {

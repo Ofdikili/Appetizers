@@ -15,6 +15,10 @@ final class Order: ObservableObject {
         items.reduce(0) { $0 + $1.price } 
     }
     
+    var orderCount : Int {
+        return items.count
+    }
+    
     func addItem(_ item: Appetizer) {
         items.append(item)
     }

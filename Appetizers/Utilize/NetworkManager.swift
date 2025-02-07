@@ -52,7 +52,7 @@ final class NetworkManager {
         task.resume()
     }
     
-    func getAppetizers1() async throws -> [Appetizer] {
+    func getAppetizersWithAsync() async throws -> [Appetizer] {
         guard let url = URL(string: appetizerURL) else {
             throw APIError.invalidUrl
         }
