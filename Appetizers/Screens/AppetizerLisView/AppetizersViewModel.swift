@@ -6,7 +6,7 @@
 //
 
 import Foundation
-class AppetizersViewModel : ObservableObject{
+@MainActor class AppetizersViewModel : ObservableObject{
     var networkManager: NetworkManager = .shared
     @Published var alertItem: AlertItem?
     @Published var isLoading:Bool = false
@@ -19,33 +19,46 @@ class AppetizersViewModel : ObservableObject{
     }
     
     func loadAppetizers() {
-        self.isLoading = true
-        let networkManager: NetworkManager = NetworkManager.shared
-        networkManager.getAppetizers { (result) in
-            DispatchQueue.main.async {
-                switch(result){
-                case .success(let appetizers):
-                    self.appetizers = appetizers
-//                    self.alertItem = AlertContext.successAlert
-                    self.isLoading = false
-                case .failure(let error):
-                    self.isLoading = false
-                    switch(error){
-                    case .invalidData:
-                        self.alertItem = AlertContext.invalidData
-                    case .invalidUrl:
-                        self.alertItem = AlertContext.invalidURL
-
-                    case .invalidResponse:
-                        self.alertItem = AlertContext.invalidResponse
-                    case .invalidToComplete:
-                        self.alertItem = AlertContext.unableToComplete
-
-                    }
-                }
+        isLoading = true
+        Task{
+            do{
+                appetizers = try await networkManager.getAppetizersWithAsync()
+                isLoading = false
+            }catch{
+                alertItem = AlertContext.invalidResponse
+                isLoading = false
             }
         }
     }
+    
+//    func loadAppetizers() {
+//        self.isLoading = true
+//        let networkManager: NetworkManager = NetworkManager.shared
+//        networkManager.getAppetizers { (result) in
+//            DispatchQueue.main.async {
+//                switch(result){
+//                case .success(let appetizers):
+//                    self.appetizers = appetizers
+////                    self.alertItem = AlertContext.successAlert
+//                    self.isLoading = false
+//                case .failure(let error):
+//                    self.isLoading = false
+//                    switch(error){
+//                    case .invalidData:
+//                        self.alertItem = AlertContext.invalidData
+//                    case .invalidUrl:
+//                        self.alertItem = AlertContext.invalidURL
+//
+//                    case .invalidResponse:
+//                        self.alertItem = AlertContext.invalidResponse
+//                    case .invalidToComplete:
+//                        self.alertItem = AlertContext.unableToComplete
+//
+//                    }
+//                }
+//            }
+//        }
+//    }
     
     
     //    func loadAppetizers() {
